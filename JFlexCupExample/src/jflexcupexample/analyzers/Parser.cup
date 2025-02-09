@@ -1,0 +1,19 @@
+package jflexcupexample.analyzers;
+import java_cup.runtime.Symbol;
+
+terminal String NUM, PLUS, MULT;
+non terminal ini;
+non terminal expr;
+
+
+precedence left PLUS;
+precedence left MULT;
+
+start with ini;
+
+ini ::= expr:e ;
+
+expr ::= expr:a PLUS expr:b 
+       | expr:l MULT expr:r 
+       | NUM:n 
+       ;
