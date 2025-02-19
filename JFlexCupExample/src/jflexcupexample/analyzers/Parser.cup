@@ -1,19 +1,62 @@
 package jflexcupexample.analyzers;
 import java_cup.runtime.Symbol;
+import composite.RunStmt;
+import java.util.LinkedList;
 
-terminal String NUM, PLUS, MULT;
+
+terminal MAIN, RUN, WITH, SEED;
+terminal BRACKET_OPEN, BRACKET_CLOSE, BRACE_OPEN, BRACE_CLOSE, COLON, COMMA;
+terminal NUM, ID;
+
 non terminal ini;
-non terminal expr;
-
-
-precedence left PLUS;
-precedence left MULT;
+non terminal main_inblock;
+non terminal RunStmt run_stmt;
+non terminal LinkedList<String> match_lst;
+non terminal LinkedList<RunStmt> run_lst;
+non terminal main;
+non terminal int seed_def;
 
 start with ini;
 
-ini ::= expr:e ;
+ini ::= main;
 
-expr ::= expr:a PLUS expr:b 
-       | expr:l MULT expr:r 
-       | NUM:n 
-       ;
+main ::= MAIN BRACE_OPEN main_inblock BRACE_CLOSE;
+
+main_inblock ::= run_lst:l
+{:
+    System.out.println(l);
+:}
+;
+
+run_stmt ::= RUN BRACKET_OPEN match_lst:l BRACKET_CLOSE WITH BRACE_OPEN seed_def:s BRACE_CLOSE
+    {:
+        RESULT = new RunStmt(s);
+    :}
+;
+
+seed_def ::= SEED COLON NUM:n
+    {:
+        RESULT = Integer.valueOf(n);
+    :}
+;
+
+match_lst ::= match_lst:l COMMA ID:i
+    {:
+    RESULT = l; RESULT.add((String) i);
+    :}
+| ID:i
+    {:
+    RESULT = new LinkedList<String>(); RESULT.add((String) i);
+    :}
+;
+
+run_lst ::= run_lst:l run_stmt:r
+    {:
+    RESULT = l; RESULT.add(r);
+    :}
+| run_stmt:r
+    {:
+    RESULT = new LinkedList<RunStmt>(); RESULT.add(r);
+    :}
+;
+

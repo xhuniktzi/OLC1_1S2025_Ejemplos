@@ -19,7 +19,16 @@ public class JFlexCupExample {
      */
     public static void main(String[] args) throws Exception {
         // TODO code application logic here
-        Lexer scanner = new Lexer(new StringReader("3+4*2"));
+        Lexer scanner = new Lexer(new StringReader("""
+main { 
+run [S1,S2,S3, S54] with { 
+seed: 29
+} 
+run [S4] with { 
+seed: 42
+} 
+}
+                                                   """));
         Parser parser = new Parser(scanner);
         parser.parse();
     }

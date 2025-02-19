@@ -8,17 +8,35 @@ package jflexcupexample.analyzers;
 /** CUP generated class containing symbol constants. */
 public class sym {
   /* terminals */
-  public static final int NUM = 2;
-  public static final int MULT = 4;
-  public static final int error = 1;
-  public static final int PLUS = 3;
+  public static final int NUM = 12;
+  public static final int COLON = 10;
+  public static final int MAIN = 2;
+  public static final int SEED = 5;
   public static final int EOF = 0;
+  public static final int BRACKET_OPEN = 6;
+  public static final int BRACE_OPEN = 8;
+  public static final int ID = 13;
+  public static final int BRACE_CLOSE = 9;
+  public static final int COMMA = 11;
+  public static final int error = 1;
+  public static final int BRACKET_CLOSE = 7;
+  public static final int WITH = 4;
+  public static final int RUN = 3;
   public static final String[] terminalNames = new String[] {
   "EOF",
   "error",
+  "MAIN",
+  "RUN",
+  "WITH",
+  "SEED",
+  "BRACKET_OPEN",
+  "BRACKET_CLOSE",
+  "BRACE_OPEN",
+  "BRACE_CLOSE",
+  "COLON",
+  "COMMA",
   "NUM",
-  "PLUS",
-  "MULT"
+  "ID"
   };
 }
 
