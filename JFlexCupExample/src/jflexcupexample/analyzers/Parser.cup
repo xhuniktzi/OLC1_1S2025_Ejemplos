@@ -1,62 +1,81 @@
 package jflexcupexample.analyzers;
 import java_cup.runtime.Symbol;
 import composite.RunStmt;
+import composite.MainStmt;
+import contracts.IBlock;
 import java.util.LinkedList;
 
+parser code {:
+public LinkedList<IBlock> AST = new LinkedList<>();
+:}
 
-terminal MAIN, RUN, WITH, SEED;
-terminal BRACKET_OPEN, BRACKET_CLOSE, BRACE_OPEN, BRACE_CLOSE, COLON, COMMA;
-terminal NUM, ID;
+terminal String MAIN, RUN, STRATEGY, INITIAL, RULES, IF, THEN, ELSE;
+terminal String BRACKET_OPEN, BRACKET_CLOSE, BRACE_OPEN, BRACE_CLOSE, COMMA, COLON;
+terminal String ID, ACTION;
+terminal String BOOLEAN;
+terminal String OR, NOT, AND;
 
 non terminal ini;
-non terminal main_inblock;
+non terminal LinkedList<RunStmt> main_inblock;
 non terminal RunStmt run_stmt;
 non terminal LinkedList<String> match_lst;
 non terminal LinkedList<RunStmt> run_lst;
-non terminal main;
-non terminal int seed_def;
+non terminal MainStmt main;
+non terminal lst_strategies, strategy, strategy_body, initial_rule, body_rules, lst_rules, rule_if;
+non terminal expr;
+
+precedence left OR, AND;
+precedence nonassoc NOT;
 
 start with ini;
 
-ini ::= main;
-
-main ::= MAIN BRACE_OPEN main_inblock BRACE_CLOSE;
-
-main_inblock ::= run_lst:l
+ini ::= lst_strategies main:m
 {:
-    System.out.println(l);
-:}
+    parser.AST.add(m);
+:};
+
+lst_strategies ::= lst_strategies strategy
+| strategy
 ;
 
-run_stmt ::= RUN BRACKET_OPEN match_lst:l BRACKET_CLOSE WITH BRACE_OPEN seed_def:s BRACE_CLOSE
-    {:
-        RESULT = new RunStmt(s);
-    :}
+strategy ::= STRATEGY ID BRACE_OPEN strategy_body BRACE_CLOSE;
+
+strategy_body ::= initial_rule body_rules;
+
+initial_rule ::= INITIAL COLON ACTION;
+
+body_rules ::= RULES COLON BRACKET_OPEN lst_rules BRACKET_CLOSE
 ;
 
-seed_def ::= SEED COLON NUM:n
-    {:
-        RESULT = Integer.valueOf(n);
-    :}
+lst_rules ::= lst_rules COMMA rule_if
+| rule_if
 ;
 
-match_lst ::= match_lst:l COMMA ID:i
-    {:
-    RESULT = l; RESULT.add((String) i);
-    :}
-| ID:i
-    {:
-    RESULT = new LinkedList<String>(); RESULT.add((String) i);
-    :}
+rule_if ::= IF expr THEN ACTION
+| ELSE ACTION
 ;
 
-run_lst ::= run_lst:l run_stmt:r
-    {:
-    RESULT = l; RESULT.add(r);
-    :}
-| run_stmt:r
-    {:
-    RESULT = new LinkedList<RunStmt>(); RESULT.add(r);
-    :}
+main ::= MAIN BRACE_OPEN main_inblock:m BRACE_CLOSE
+{: RESULT = new MainStmt(m); :}
 ;
 
+main_inblock ::= run_lst:l {: RESULT = l; :}
+;
+
+run_stmt ::= RUN BRACKET_OPEN match_lst:l BRACKET_CLOSE
+{: RESULT = new RunStmt(l); :}
+;
+
+match_lst ::= match_lst:l COMMA ID:i {: RESULT = l; RESULT.add(i); :}
+| ID:i {: RESULT = new LinkedList<String>(); RESULT.add(i); :}
+;
+
+run_lst ::= run_lst:l run_stmt:r {: RESULT = l; RESULT.add(r); :}
+| run_stmt:r {: RESULT = new LinkedList<RunStmt>(); RESULT.add(r); :}
+;
+
+expr ::= expr OR expr
+| expr AND expr
+| NOT expr
+| BOOLEAN
+;

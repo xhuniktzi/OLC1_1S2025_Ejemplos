@@ -4,7 +4,9 @@
  */
 package jflexcupexample;
 
+import contracts.IBlock;
 import java.io.StringReader;
+import java.util.LinkedList;
 import jflexcupexample.analyzers.Lexer;
 import jflexcupexample.analyzers.Parser;
 
@@ -20,17 +22,27 @@ public class JFlexCupExample {
     public static void main(String[] args) throws Exception {
         // TODO code application logic here
         Lexer scanner = new Lexer(new StringReader("""
+                                                   
+strategy Downing {
+  initial: C
+  rules: [
+      if True && !False then C,                                                   
+      if False then D,
+      else C
+  ]
+}                                             
 main { 
-run [S1,S2,S3, S54] with { 
-seed: 29
-} 
-run [S4] with { 
-seed: 42
-} 
+    run [S1,S2,S3, S54] 
+    run [S4]  
 }
-                                                   """));
+"""));
         Parser parser = new Parser(scanner);
         parser.parse();
+        
+        LinkedList<IBlock> AST = parser.AST;
+        for (IBlock iBlock : AST) {
+            iBlock.ejecutar();
+        }
     }
     
 }

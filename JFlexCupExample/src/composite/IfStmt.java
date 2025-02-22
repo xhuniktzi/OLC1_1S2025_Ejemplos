@@ -4,15 +4,10 @@
  */
 package composite;
 
-import java.util.LinkedList;
-
 /**
  *
  * @author xhuni
  */
-public class RunStmt {
-    public LinkedList<String> partidas;
-    public RunStmt(LinkedList<String> partidas){
-        this.partidas = partidas;
-    }
+public class IfStmt {
+    
 }

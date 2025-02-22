@@ -8,35 +8,51 @@ package jflexcupexample.analyzers;
 /** CUP generated class containing symbol constants. */
 public class sym {
   /* terminals */
-  public static final int NUM = 12;
-  public static final int COLON = 10;
-  public static final int MAIN = 2;
-  public static final int SEED = 5;
+  public static final int RULES = 6;
+  public static final int AND = 21;
+  public static final int ELSE = 9;
+  public static final int BRACE_CLOSE = 13;
+  public static final int OR = 19;
+  public static final int INITIAL = 5;
+  public static final int THEN = 8;
+  public static final int NOT = 20;
+  public static final int BRACE_OPEN = 12;
+  public static final int IF = 7;
+  public static final int COLON = 15;
+  public static final int ID = 16;
+  public static final int BOOLEAN = 18;
+  public static final int BRACKET_OPEN = 10;
+  public static final int STRATEGY = 4;
+  public static final int BRACKET_CLOSE = 11;
+  public static final int COMMA = 14;
   public static final int EOF = 0;
-  public static final int BRACKET_OPEN = 6;
-  public static final int BRACE_OPEN = 8;
-  public static final int ID = 13;
-  public static final int BRACE_CLOSE = 9;
-  public static final int COMMA = 11;
-  public static final int error = 1;
-  public static final int BRACKET_CLOSE = 7;
-  public static final int WITH = 4;
+  public static final int MAIN = 2;
   public static final int RUN = 3;
+  public static final int error = 1;
+  public static final int ACTION = 17;
   public static final String[] terminalNames = new String[] {
   "EOF",
   "error",
   "MAIN",
   "RUN",
-  "WITH",
-  "SEED",
+  "STRATEGY",
+  "INITIAL",
+  "RULES",
+  "IF",
+  "THEN",
+  "ELSE",
   "BRACKET_OPEN",
   "BRACKET_CLOSE",
   "BRACE_OPEN",
   "BRACE_CLOSE",
-  "COLON",
   "COMMA",
-  "NUM",
-  "ID"
+  "COLON",
+  "ID",
+  "ACTION",
+  "BOOLEAN",
+  "OR",
+  "NOT",
+  "AND"
   };
 }
 
