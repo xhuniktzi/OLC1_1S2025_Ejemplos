@@ -41,6 +41,8 @@ WS = [ \t\r\n]+
 "]" { return new Symbol(sym.BRACKET_CLOSE, yyline, (int) yychar, yytext()); }
 "{" { return new Symbol(sym.BRACE_OPEN, yyline, (int) yychar, yytext()); }
 "}" { return new Symbol(sym.BRACE_CLOSE, yyline, (int) yychar, yytext()); }
+"(" { return new Symbol(sym.PARENTESIS_OPEN, yyline, (int) yychar, yytext()); }
+")" { return new Symbol(sym.PARENTESIS_CLOSE, yyline, (int) yychar, yytext()); }
 "," { return new Symbol(sym.COMMA, yyline, (int) yychar, yytext()); }
 ":" { return new Symbol(sym.COLON, yyline, (int) yychar, yytext()); }
 
