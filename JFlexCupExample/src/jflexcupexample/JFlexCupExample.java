@@ -21,12 +21,14 @@ public class JFlexCupExample {
      */
     public static void main(String[] args) throws Exception {
         // TODO code application logic here
+        
+        // NOTA EN EL PROYECTO NO VENDRAN PARENTESIS
         Lexer scanner = new Lexer(new StringReader("""
                                                    
 strategy Downing {
   initial: C
   rules: [
-      if True && !False then C,                                                   
+      if !True && False || !True then C,                                                   
       if False then D,
       else C
   ]
