@@ -28,8 +28,7 @@ public class JFlexCupExample {
 strategy Downing {
   initial: C
   rules: [
-      if !True && False || !True then C,                                                   
-      if False then D,
+      if random > 0.5 then C,
       else C
   ]
 }                                             

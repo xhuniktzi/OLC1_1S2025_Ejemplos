@@ -7,8 +7,12 @@ import composite.NotExpr;
 import composite.OrExpr;
 import composite.AndExpr;
 import composite.BoolTerm;
+import composite.StrategyStmt;
 import contracts.IExpr;
 import java.util.LinkedList;
+import jflexcupexample.Utils;
+import composite.IfStmt;
+import enums.Action;
 
 parser code {:
 public LinkedList<IBlock> AST = new LinkedList<>();
@@ -19,7 +23,9 @@ terminal String BRACKET_OPEN, BRACKET_CLOSE, BRACE_OPEN, BRACE_CLOSE, COMMA, COL
 terminal String ID, ACTION;
 terminal String BOOLEAN;
 terminal String OR, NOT, AND;
-terminal String PARENTESIS_OPEN, PARENTESIS_CLOSE;
+terminal String MAYORQ;
+terminal String RANDOM;
+terminal String NUM;
 
 non terminal ini;
 non terminal LinkedList<RunStmt> main_inblock;
@@ -27,41 +33,53 @@ non terminal RunStmt run_stmt;
 non terminal LinkedList<String> match_lst;
 non terminal LinkedList<RunStmt> run_lst;
 non terminal MainStmt main;
-non terminal lst_strategies, strategy, strategy_body, initial_rule, body_rules, lst_rules, rule_if;
+non terminal IfStmt rule_if;
+non terminal StrategyStmt strategy;
+non terminal LinkedList<StrategyStmt> lst_strategies;
 non terminal IExpr expr;
+non terminal LinkedList<IfStmt> lst_rules, body_rules;
+non terminal Action initial_rule;
 
 precedence left OR, AND;
 precedence nonassoc NOT;
 
 start with ini;
 
-ini ::= lst_strategies main:m
+ini ::= lst_strategies:l main:m
 {:
+    for (StrategyStmt s : l) {
+        parser.AST.add(s);
+    }
     parser.AST.add(m);
 :};
 
-lst_strategies ::= lst_strategies strategy
-| strategy
+lst_strategies ::= lst_strategies:l strategy:s {: RESULT = l; RESULT.add(s); :}
+| strategy:s {: RESULT = new LinkedList<StrategyStmt>(); RESULT.add(s); :}
 ;
 
-strategy ::= STRATEGY ID BRACE_OPEN strategy_body BRACE_CLOSE;
-
-strategy_body ::= initial_rule body_rules;
-
-initial_rule ::= INITIAL COLON ACTION;
-
-body_rules ::= RULES COLON BRACKET_OPEN lst_rules BRACKET_CLOSE
+strategy ::= STRATEGY ID BRACE_OPEN initial_rule:i body_rules:b BRACE_CLOSE
+{: RESULT = new StrategyStmt(i,b); :}
 ;
 
-lst_rules ::= lst_rules COMMA rule_if
-| rule_if
+initial_rule ::= INITIAL COLON ACTION:a
+{: RESULT = Utils.parseAction(a); :}
 ;
 
-rule_if ::= IF expr:e THEN ACTION 
-{: 
-System.out.println(e.evaluar());
+body_rules ::= RULES COLON BRACKET_OPEN lst_rules:l BRACKET_CLOSE
+{: RESULT = l; :}
+;
+
+lst_rules ::= lst_rules:l COMMA rule_if:r  {: RESULT = l; RESULT.add(r); :}
+| rule_if:r {: RESULT = new LinkedList<IfStmt>(); RESULT.add(r); :}
+;
+
+rule_if ::= IF expr:e THEN ACTION:a 
+{:
+RESULT = new IfStmt(e, Utils.parseAction(a));
 :}
-| ELSE ACTION
+| ELSE ACTION:a {:
+RESULT = new IfStmt(Utils.parseAction(a));
+:}
 ;
 
 main ::= MAIN BRACE_OPEN main_inblock:m BRACE_CLOSE
@@ -88,4 +106,7 @@ expr ::=
 | expr:e1 AND expr:e2 {: RESULT = new AndExpr(e1, e2); :}
 | NOT expr:e {: RESULT = new NotExpr(e); :}
 | BOOLEAN:b {: RESULT = new BoolTerm(b); :}
+| RANDOM MAYORQ NUM:n {: 
+    RESULT = new BoolTerm(Utils.valueBoolean(Math.random() > Utils.parseNum(n)));
+:}
 ;

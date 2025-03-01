@@ -20,11 +20,12 @@ public class sym {
   public static final int IF = 7;
   public static final int COLON = 15;
   public static final int ID = 16;
-  public static final int PARENTESIS_CLOSE = 23;
-  public static final int PARENTESIS_OPEN = 22;
+  public static final int NUM = 24;
   public static final int BOOLEAN = 18;
   public static final int BRACKET_OPEN = 10;
+  public static final int RANDOM = 23;
   public static final int STRATEGY = 4;
+  public static final int MAYORQ = 22;
   public static final int BRACKET_CLOSE = 11;
   public static final int COMMA = 14;
   public static final int EOF = 0;
@@ -55,8 +56,9 @@ public class sym {
   "OR",
   "NOT",
   "AND",
-  "PARENTESIS_OPEN",
-  "PARENTESIS_CLOSE"
+  "MAYORQ",
+  "RANDOM",
+  "NUM"
   };
 }
 
