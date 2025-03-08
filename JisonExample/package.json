@@ -1,0 +1,21 @@
+{
+  "devDependencies": {
+    "@ts-jison/parser-generator": "^0.4.1-alpha.2",
+    "@types/cors": "^2.8.17",
+    "@types/express": "^5.0.0",
+    "concurrently": "^9.1.2",
+    "nodemon": "^3.1.9",
+    "typescript": "^5.8.2"
+  },
+  "dependencies": {
+    "body-parser": "^1.20.3",
+    "cors": "^2.8.5",
+    "express": "^4.21.2"
+  },
+  "scripts": {
+    "build": "tsc --outDir dist",
+    "dev": "concurrently \"tsc -w\" \"nodemon -q dist/index.js\"",
+    "start": "node dist/index.js",
+    "compile": "ts-jison -t typescript -o src/grammar.ts src/grammar.jison"
+  }
+}
