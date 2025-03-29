@@ -1,7 +1,7 @@
 import { TokenLocation } from "@ts-jison/common";
 import { Symbols } from "../context/Symbols";
 
-export interface IExpr {
-    evaluate(context: Symbols): number;
+export interface IStmt {
+    evaluate(context: Symbols): void;
     location: TokenLocation;
 }

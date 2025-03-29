@@ -13,71 +13,94 @@ import { Producto } from './composite/Producto';
 import { Resta } from './composite/Resta';
 import { Suma } from './composite/Suma';
 import { TerminalNum } from './composite/TerminalNum';
+import { Declaration } from './composite/Declaration';
+import { VariableRef } from './composite/VariableRef';
+import { Print } from './composite/Print';
+import fnParseDatatype from './functions/parseDatatype';
+
 
 export class grammarParser extends JisonParser implements JisonParserApi {
-  $?: any;
-  symbols_: SymbolsType = { "error": 2, "expressions": 3, "e": 4, "EOF": 5, "+": 6, "-": 7, "*": 8, "/": 9, "^": 10, "!": 11, "%": 12, "(": 13, ")": 14, "NUMBER": 15, "E": 16, "PI": 17, "$accept": 0, "$end": 1 };
-  terminals_: TerminalsType = { 2: "error", 5: "EOF", 6: "+", 7: "-", 8: "*", 9: "/", 10: "^", 11: "!", 12: "%", 13: "(", 14: ")", 15: "NUMBER", 16: "E", 17: "PI" };
-  productions_: ProductionsType = [0, [3, 2], [4, 3], [4, 3], [4, 3], [4, 3], [4, 3], [4, 2], [4, 3], [4, 2], [4, 3], [4, 1], [4, 1], [4, 1]];
-  table: Array<StateType>;
-  defaultActions: { [key: number]: any } = { 8: [2, 1] };
+    $?: any;
+    symbols_: SymbolsType = {"error":2,"inicio":3,"instructions":4,"EOF":5,"instruction":6,"declaration":7,";":8,"print":9,"INGRESAR":10,"TYPE":11,"IDENTIFIER":12,"=":13,"e":14,"IMPRIMIR":15,"+":16,"-":17,"*":18,"/":19,"^":20,"!":21,"%":22,"(":23,")":24,"NUMBER":25,"E":26,"PI":27,"$accept":0,"$end":1};
+    terminals_: TerminalsType = {2:"error",5:"EOF",8:";",10:"INGRESAR",11:"TYPE",12:"IDENTIFIER",13:"=",15:"IMPRIMIR",16:"+",17:"-",18:"*",19:"/",20:"^",21:"!",22:"%",23:"(",24:")",25:"NUMBER",26:"E",27:"PI"};
+    productions_: ProductionsType = [0,[3,2],[4,2],[4,1],[6,2],[6,2],[7,5],[9,2],[14,3],[14,3],[14,3],[14,3],[14,3],[14,2],[14,3],[14,2],[14,3],[14,1],[14,1],[14,1],[14,1]];
+    table: Array<StateType>;
+    defaultActions: {[key:number]: any} = {8:[2,1]};
 
-  constructor(yy = {}, lexer = new grammarLexer(yy)) {
-    super(yy, lexer);
+    constructor (yy = {}, lexer = new grammarLexer(yy)) {
+      super(yy, lexer);
 
-    // shorten static method to just `o` for terse STATE_TABLE
-    const $V0 = [1, 3], $V1 = [1, 4], $V2 = [1, 5], $V3 = [1, 6], $V4 = [1, 7], $V5 = [1, 9], $V6 = [1, 10], $V7 = [1, 11], $V8 = [1, 12], $V9 = [1, 13], $Va = [1, 14], $Vb = [1, 15], $Vc = [5, 6, 7, 8, 9, 10, 11, 12, 14], $Vd = [5, 6, 7, 14], $Ve = [5, 6, 7, 8, 9, 12, 14];
-    const o = JisonParser.expandParseTable;
-    this.table = [{ 3: 1, 4: 2, 7: $V0, 13: $V1, 15: $V2, 16: $V3, 17: $V4 }, { 1: [3] }, { 5: [1, 8], 6: $V5, 7: $V6, 8: $V7, 9: $V8, 10: $V9, 11: $Va, 12: $Vb }, { 4: 16, 7: $V0, 13: $V1, 15: $V2, 16: $V3, 17: $V4 }, { 4: 17, 7: $V0, 13: $V1, 15: $V2, 16: $V3, 17: $V4 }, o($Vc, [2, 11]), o($Vc, [2, 12]), o($Vc, [2, 13]), { 1: [2, 1] }, { 4: 18, 7: $V0, 13: $V1, 15: $V2, 16: $V3, 17: $V4 }, { 4: 19, 7: $V0, 13: $V1, 15: $V2, 16: $V3, 17: $V4 }, { 4: 20, 7: $V0, 13: $V1, 15: $V2, 16: $V3, 17: $V4 }, { 4: 21, 7: $V0, 13: $V1, 15: $V2, 16: $V3, 17: $V4 }, { 4: 22, 7: $V0, 13: $V1, 15: $V2, 16: $V3, 17: $V4 }, o($Vc, [2, 7]), { 4: 23, 7: $V0, 13: $V1, 15: $V2, 16: $V3, 17: $V4 }, o($Vc, [2, 9]), { 6: $V5, 7: $V6, 8: $V7, 9: $V8, 10: $V9, 11: $Va, 12: $Vb, 14: [1, 24] }, o($Vd, [2, 2], { 8: $V7, 9: $V8, 10: $V9, 11: $Va, 12: $Vb }), o($Vd, [2, 3], { 8: $V7, 9: $V8, 10: $V9, 11: $Va, 12: $Vb }), o($Ve, [2, 4], { 10: $V9, 11: $Va }), o($Ve, [2, 5], { 10: $V9, 11: $Va }), o([5, 6, 7, 8, 9, 10, 12, 14], [2, 6], { 11: $Va }), o($Ve, [2, 8], { 10: $V9, 11: $Va }), o($Vc, [2, 10])];
-  }
-
-  performAction(yytext: string, yyleng: number, yylineno: number, yy: any, yystate: number /* action[1] */, $$: any /* vstack */, _$: any /* lstack */): any {
-    /* this == yyval */
-    var $0 = $$.length - 1;
-    switch (yystate) {
-      case 1:
-        return $$[$0 - 1];
-        break;
-      case 2:
-        this.$ = new Suma($$[$0 - 2], $$[$0], _$[$0 - 2]);
-        break;
-      case 3:
-        this.$ = new Resta($$[$0 - 2], $$[$0], _$[$0 - 2]);
-        break;
-      case 4:
-        this.$ = new Producto($$[$0 - 2], $$[$0], _$[$0 - 2]);
-        break;
-      case 5:
-        this.$ = new Division($$[$0 - 2], $$[$0], _$[$0 - 2]);
-        break;
-      case 6:
-        this.$ = new Potencia($$[$0 - 2], $$[$0], _$[$0 - 2]);
-        break;
-      case 7:
-
-        this.$ = new Factorial($$[$0 - 1], _$[$0 - 1]);
-
-        break;
-      case 8:
-        this.$ = new Modulo($$[$0 - 2], $$[$0], _$[$0 - 2]);
-        break;
-      case 9:
-        this.$ = new Negativo($$[$0], _$[$0 - 1]);
-        break;
-      case 10:
-        this.$ = $$[$0 - 1];
-        break;
-      case 11:
-        this.$ = new TerminalNum(Number(yytext), _$[$0]);
-        break;
-      case 12:
-        this.$ = new TerminalNum(Math.E, _$[$0]);
-        break;
-      case 13:
-        this.$ = new TerminalNum(Math.PI, _$[$0]);
-        break;
+      // shorten static method to just `o` for terse STATE_TABLE
+      const $V0=[1,6],$V1=[1,7],$V2=[5,10,15],$V3=[1,19],$V4=[1,14],$V5=[1,15],$V6=[1,16],$V7=[1,17],$V8=[1,18],$V9=[1,21],$Va=[1,22],$Vb=[1,23],$Vc=[1,24],$Vd=[1,25],$Ve=[1,26],$Vf=[1,27],$Vg=[8,16,17,18,19,20,21,22,24],$Vh=[8,16,17,24],$Vi=[8,16,17,18,19,22,24];
+      const o = JisonParser.expandParseTable;
+      this.table = [{3:1,4:2,6:3,7:4,9:5,10:$V0,15:$V1},{1:[3]},{5:[1,8],6:9,7:4,9:5,10:$V0,15:$V1},o($V2,[2,3]),{8:[1,10]},{8:[1,11]},{11:[1,12]},{12:$V3,14:13,17:$V4,23:$V5,25:$V6,26:$V7,27:$V8},{1:[2,1]},o($V2,[2,2]),o($V2,[2,4]),o($V2,[2,5]),{12:[1,20]},{8:[2,7],16:$V9,17:$Va,18:$Vb,19:$Vc,20:$Vd,21:$Ve,22:$Vf},{12:$V3,14:28,17:$V4,23:$V5,25:$V6,26:$V7,27:$V8},{12:$V3,14:29,17:$V4,23:$V5,25:$V6,26:$V7,27:$V8},o($Vg,[2,17]),o($Vg,[2,18]),o($Vg,[2,19]),o($Vg,[2,20]),{13:[1,30]},{12:$V3,14:31,17:$V4,23:$V5,25:$V6,26:$V7,27:$V8},{12:$V3,14:32,17:$V4,23:$V5,25:$V6,26:$V7,27:$V8},{12:$V3,14:33,17:$V4,23:$V5,25:$V6,26:$V7,27:$V8},{12:$V3,14:34,17:$V4,23:$V5,25:$V6,26:$V7,27:$V8},{12:$V3,14:35,17:$V4,23:$V5,25:$V6,26:$V7,27:$V8},o($Vg,[2,13]),{12:$V3,14:36,17:$V4,23:$V5,25:$V6,26:$V7,27:$V8},o($Vg,[2,15]),{16:$V9,17:$Va,18:$Vb,19:$Vc,20:$Vd,21:$Ve,22:$Vf,24:[1,37]},{12:$V3,14:38,17:$V4,23:$V5,25:$V6,26:$V7,27:$V8},o($Vh,[2,8],{18:$Vb,19:$Vc,20:$Vd,21:$Ve,22:$Vf}),o($Vh,[2,9],{18:$Vb,19:$Vc,20:$Vd,21:$Ve,22:$Vf}),o($Vi,[2,10],{20:$Vd,21:$Ve}),o($Vi,[2,11],{20:$Vd,21:$Ve}),o([8,16,17,18,19,20,22,24],[2,12],{21:$Ve}),o($Vi,[2,14],{20:$Vd,21:$Ve}),o($Vg,[2,16]),{8:[2,6],16:$V9,17:$Va,18:$Vb,19:$Vc,20:$Vd,21:$Ve,22:$Vf}];
     }
-  }
+
+    performAction (yytext:string, yyleng:number, yylineno:number, yy:any, yystate:number /* action[1] */, $$:any /* vstack */, _$:any /* lstack */): any {
+/* this == yyval */
+          var $0 = $$.length - 1;
+        switch (yystate) {
+case 1:
+ return $$[$0-1]; 
+break;
+case 2:
+ this.$ = $$[$0-1]; this.$.push($$[$0]); 
+break;
+case 3:
+ this.$ = []; this.$[0] = $$[$0]; 
+break;
+case 4: case 5:
+ this.$ = $$[$0-1]; 
+break;
+case 6:
+ this.$ = new Declaration(fnParseDatatype($$[$0-3]), $$[$0-2], $$[$0], _$[$0-4]); 
+break;
+case 7:
+ this.$ = new Print($$[$0], _$[$0-1]); 
+break;
+case 8:
+this.$ = new Suma($$[$0-2], $$[$0], _$[$0-2]);
+break;
+case 9:
+this.$ = new Resta($$[$0-2], $$[$0], _$[$0-2]);
+break;
+case 10:
+this.$ = new Producto($$[$0-2], $$[$0], _$[$0-2]);
+break;
+case 11:
+this.$ = new Division($$[$0-2], $$[$0], _$[$0-2]);
+break;
+case 12:
+this.$ = new Potencia($$[$0-2], $$[$0], _$[$0-2]);
+break;
+case 13:
+
+          this.$ = new Factorial($$[$0-1], _$[$0-1]);
+        
+break;
+case 14:
+this.$ = new Modulo($$[$0-2], $$[$0], _$[$0-2]);
+break;
+case 15:
+this.$ = new Negativo($$[$0], _$[$0-1]);
+break;
+case 16:
+this.$ = $$[$0-1];
+break;
+case 17:
+this.$ = new TerminalNum(Number(yytext), _$[$0]);
+break;
+case 18:
+this.$ = new TerminalNum(Math.E, _$[$0]);
+break;
+case 19:
+this.$ = new TerminalNum(Math.PI, _$[$0]);
+break;
+case 20:
+this.$ = new VariableRef($$[$0], _$[$0]);
+break;
+        }
+    }
 }
 
 
@@ -85,64 +108,87 @@ export class grammarParser extends JisonParser implements JisonParserApi {
 import { JisonLexer, JisonLexerApi } from '@ts-jison/lexer';
 
 export class grammarLexer extends JisonLexer implements JisonLexerApi {
-  options: any = { "moduleName": "grammar" };
-  constructor(yy = {}) {
-    super(yy);
-  }
-
-  rules: RegExp[] = [
-    /^(?:\s+)/,
-    /^(?:[0-9]+(?:\.[0-9]+)?\b)/,
-    /^(?:\*)/,
-    /^(?:\/)/,
-    /^(?:-)/,
-    /^(?:\+)/,
-    /^(?:\^)/,
-    /^(?:!)/,
-    /^(?:%)/,
-    /^(?:\()/,
-    /^(?:\))/,
-    /^(?:PI\b)/,
-    /^(?:E\b)/,
-    /^(?:$)/,
-    /^(?:.)/
-  ];
-  conditions: any = { "INITIAL": { "rules": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14], "inclusive": true } }
-  performAction(yy: any, yy_: any, $avoiding_name_collisions: any, YY_START: any): any {
-    var YYSTATE = YY_START;
-    switch ($avoiding_name_collisions) {
-      case 0:/* skip whitespace */
-        break;
-      case 1: return 15
-        break;
-      case 2: return 8
-        break;
-      case 3: return 9
-        break;
-      case 4: return 7
-        break;
-      case 5: return 6
-        break;
-      case 6: return 10
-        break;
-      case 7: return 11
-        break;
-      case 8: return 12
-        break;
-      case 9: return 13
-        break;
-      case 10: return 14
-        break;
-      case 11: return 17
-        break;
-      case 12: return 16
-        break;
-      case 13: return 5
-        break;
-      case 14: return 'INVALID'
-        break;
+    options: any = {"moduleName":"grammar"};
+    constructor (yy = {}) {
+        super(yy);
     }
-  }
+
+    rules: RegExp[] = [
+        /^(?:\s+)/,
+        /^(?:[0-9]+(?:\.[0-9]+)?\b)/,
+        /^(?:;)/,
+        /^(?:=)/,
+        /^(?:\*)/,
+        /^(?:\/)/,
+        /^(?:-)/,
+        /^(?:\+)/,
+        /^(?:\^)/,
+        /^(?:!)/,
+        /^(?:%)/,
+        /^(?:\()/,
+        /^(?:\))/,
+        /^(?:PI\b)/,
+        /^(?:E\b)/,
+        /^(?:ingresar\b)/,
+        /^(?:imprimir\b)/,
+        /^(?:int\b)/,
+        /^(?:boolean\b)/,
+        /^(?:[0-9a-zA-Z_]+)/,
+        /^(?:$)/,
+        /^(?:.)/
+    ];
+    conditions: any = {"INITIAL":{"rules":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21],"inclusive":true}}
+    performAction (yy:any,yy_:any,$avoiding_name_collisions:any,YY_START:any): any {
+          var YYSTATE=YY_START;
+        switch($avoiding_name_collisions) {
+    case 0:/* skip whitespace */
+      break;
+    case 1:return 25
+      break;
+    case 2:return 8
+      break;
+    case 3:return 13
+      break;
+    case 4:return 18
+      break;
+    case 5:return 19
+      break;
+    case 6:return 17
+      break;
+    case 7:return 16
+      break;
+    case 8:return 20
+      break;
+    case 9:return 21
+      break;
+    case 10:return 22
+      break;
+    case 11:return 23
+      break;
+    case 12:return 24
+      break;
+    case 13:return 27
+      break;
+    case 14:return 26
+      break;
+    case 15:return 10
+      break;
+    case 16:return 15
+      break;
+    case 17:return 11
+      break;
+    case 18:return 11
+      break;
+    case 19:return 12;
+      break;
+    case 20:return 5
+      break;
+    case 21:
+                          throw new Error('Unexpected character ' + yy_.yytext);
+                        
+      break;
+        }
+    }
 }
 
 

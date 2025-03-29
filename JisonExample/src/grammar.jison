@@ -8,6 +8,8 @@
 
 \s+                   /* skip whitespace */
 [0-9]+("."[0-9]+)?\b  return 'NUMBER'
+";"                   return ';'
+"="                   return '='
 "*"                   return '*'
 "/"                   return '/'
 "-"                   return '-'
@@ -19,8 +21,16 @@
 ")"                   return ')'
 "PI"                  return 'PI'
 "E"                   return 'E'
+"ingresar"            return 'INGRESAR'
+"imprimir"            return 'IMPRIMIR'
+"int"                return 'TYPE'
+"boolean"             return 'TYPE'
+[0-9a-zA-Z_]+         return 'IDENTIFIER';
 <<EOF>>               return 'EOF'
-.                     return 'INVALID'
+.                     {
+                          throw new Error('Unexpected character ' + yytext);
+                        }
+
 
 /lex
 
@@ -35,6 +45,11 @@ import { Producto } from './composite/Producto';
 import { Resta } from './composite/Resta';
 import { Suma } from './composite/Suma';
 import { TerminalNum } from './composite/TerminalNum';
+import { Declaration } from './composite/Declaration';
+import { VariableRef } from './composite/VariableRef';
+import { Print } from './composite/Print';
+import fnParseDatatype from './functions/parseDatatype';
+
 %}
 
 %left '+' '-'
@@ -43,13 +58,32 @@ import { TerminalNum } from './composite/TerminalNum';
 %right '!'
 %left UMINUS
 
-%start expressions
+%start inicio
 
 %% /* language grammar */
 
-expressions
-    : e EOF
+inicio : instructions EOF
         { return $1; }
+        ;
+
+instructions : instructions instruction
+                { $$ = $1; $$.push($2); }
+             | instruction
+             { $$ = []; $$[0] = $1; }
+             ;
+
+instruction : declaration ';'
+    { $$ = $1; }
+    | print ';'
+    { $$ = $1; }
+    ;
+
+declaration : INGRESAR TYPE IDENTIFIER '=' e
+    { $$ = new Declaration(fnParseDatatype($2), $3, $5, @1); }
+    ;
+
+print : IMPRIMIR e
+    { $$ = new Print($2, @1); }
     ;
 
 e
@@ -79,4 +113,6 @@ e
         {$$ = new TerminalNum(Math.E, @1);}
     | PI
         {$$ = new TerminalNum(Math.PI, @1);}
+    | IDENTIFIER
+        {$$ = new VariableRef($1, @1);}
     ;

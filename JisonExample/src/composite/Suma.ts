@@ -1,10 +1,11 @@
 import { TokenLocation } from "@ts-jison/common";
 import { IExpr } from "../contracts/IExpr";
+import { Symbols } from "../context/Symbols";
 
 export class Suma implements IExpr {
     constructor(private left: IExpr, private right: IExpr, public location: TokenLocation) {}
 
-    evaluate(): number {
-        return this.left.evaluate() + this.right.evaluate();
+    evaluate(context: Symbols): number {
+        return this.left.evaluate(context) + this.right.evaluate(context);
     }
 }
