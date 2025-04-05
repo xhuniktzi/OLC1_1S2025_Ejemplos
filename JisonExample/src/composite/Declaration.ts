@@ -10,7 +10,7 @@ export class Declaration implements IStmt {
     evaluate(context: Symbols): void {
         context.setSymbol(this.name, {
             type: this.type,
-            value: this.value.evaluate(context)
+            value: this.value.evaluate(context).value,
         });
     }
 }

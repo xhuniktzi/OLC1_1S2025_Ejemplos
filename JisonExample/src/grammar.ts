@@ -12,28 +12,32 @@ import { Potencia } from './composite/Potencia';
 import { Producto } from './composite/Producto';
 import { Resta } from './composite/Resta';
 import { Suma } from './composite/Suma';
+import { MayorQue } from './composite/MayorQue';
+import { Condicional } from './composite/Condicional';
 import { TerminalNum } from './composite/TerminalNum';
+import { TerminalBool } from './composite/TerminalBool';
 import { Declaration } from './composite/Declaration';
 import { VariableRef } from './composite/VariableRef';
 import { Print } from './composite/Print';
 import fnParseDatatype from './functions/parseDatatype';
+import fnParseBoolean from './functions/parseBoolean';
 
 
 export class grammarParser extends JisonParser implements JisonParserApi {
     $?: any;
-    symbols_: SymbolsType = {"error":2,"inicio":3,"instructions":4,"EOF":5,"instruction":6,"declaration":7,";":8,"print":9,"INGRESAR":10,"TYPE":11,"IDENTIFIER":12,"=":13,"e":14,"IMPRIMIR":15,"+":16,"-":17,"*":18,"/":19,"^":20,"!":21,"%":22,"(":23,")":24,"NUMBER":25,"E":26,"PI":27,"$accept":0,"$end":1};
-    terminals_: TerminalsType = {2:"error",5:"EOF",8:";",10:"INGRESAR",11:"TYPE",12:"IDENTIFIER",13:"=",15:"IMPRIMIR",16:"+",17:"-",18:"*",19:"/",20:"^",21:"!",22:"%",23:"(",24:")",25:"NUMBER",26:"E",27:"PI"};
-    productions_: ProductionsType = [0,[3,2],[4,2],[4,1],[6,2],[6,2],[7,5],[9,2],[14,3],[14,3],[14,3],[14,3],[14,3],[14,2],[14,3],[14,2],[14,3],[14,1],[14,1],[14,1],[14,1]];
+    symbols_: SymbolsType = {"error":2,"inicio":3,"instructions":4,"EOF":5,"instruction":6,"declaration":7,";":8,"print":9,"if":10,"INGRESAR":11,"TYPE":12,"IDENTIFIER":13,"=":14,"e":15,"IMPRIMIR":16,"SI":17,"(":18,")":19,"{":20,"}":21,"+":22,"-":23,"*":24,"/":25,"^":26,"!":27,"%":28,"NUMBER":29,"BOOLEAN":30,"E":31,"PI":32,">":33,"$accept":0,"$end":1};
+    terminals_: TerminalsType = {2:"error",5:"EOF",8:";",11:"INGRESAR",12:"TYPE",13:"IDENTIFIER",14:"=",16:"IMPRIMIR",17:"SI",18:"(",19:")",20:"{",21:"}",22:"+",23:"-",24:"*",25:"/",26:"^",27:"!",28:"%",29:"NUMBER",30:"BOOLEAN",31:"E",32:"PI",33:">"};
+    productions_: ProductionsType = [0,[3,2],[4,2],[4,1],[6,2],[6,2],[6,1],[7,5],[9,2],[10,7],[15,3],[15,3],[15,3],[15,3],[15,3],[15,2],[15,3],[15,2],[15,3],[15,1],[15,1],[15,1],[15,1],[15,1],[15,3]];
     table: Array<StateType>;
-    defaultActions: {[key:number]: any} = {8:[2,1]};
+    defaultActions: {[key:number]: any} = {10:[2,1]};
 
     constructor (yy = {}, lexer = new grammarLexer(yy)) {
       super(yy, lexer);
 
       // shorten static method to just `o` for terse STATE_TABLE
-      const $V0=[1,6],$V1=[1,7],$V2=[5,10,15],$V3=[1,19],$V4=[1,14],$V5=[1,15],$V6=[1,16],$V7=[1,17],$V8=[1,18],$V9=[1,21],$Va=[1,22],$Vb=[1,23],$Vc=[1,24],$Vd=[1,25],$Ve=[1,26],$Vf=[1,27],$Vg=[8,16,17,18,19,20,21,22,24],$Vh=[8,16,17,24],$Vi=[8,16,17,18,19,22,24];
+      const $V0=[1,7],$V1=[1,8],$V2=[1,9],$V3=[5,11,16,17,21],$V4=[1,22],$V5=[1,17],$V6=[1,16],$V7=[1,18],$V8=[1,19],$V9=[1,20],$Va=[1,21],$Vb=[1,25],$Vc=[1,26],$Vd=[1,27],$Ve=[1,28],$Vf=[1,29],$Vg=[1,30],$Vh=[1,31],$Vi=[1,32],$Vj=[8,19,22,23,24,25,26,27,28,33],$Vk=[8,19,22,23,33],$Vl=[8,19,22,23,24,25,28,33];
       const o = JisonParser.expandParseTable;
-      this.table = [{3:1,4:2,6:3,7:4,9:5,10:$V0,15:$V1},{1:[3]},{5:[1,8],6:9,7:4,9:5,10:$V0,15:$V1},o($V2,[2,3]),{8:[1,10]},{8:[1,11]},{11:[1,12]},{12:$V3,14:13,17:$V4,23:$V5,25:$V6,26:$V7,27:$V8},{1:[2,1]},o($V2,[2,2]),o($V2,[2,4]),o($V2,[2,5]),{12:[1,20]},{8:[2,7],16:$V9,17:$Va,18:$Vb,19:$Vc,20:$Vd,21:$Ve,22:$Vf},{12:$V3,14:28,17:$V4,23:$V5,25:$V6,26:$V7,27:$V8},{12:$V3,14:29,17:$V4,23:$V5,25:$V6,26:$V7,27:$V8},o($Vg,[2,17]),o($Vg,[2,18]),o($Vg,[2,19]),o($Vg,[2,20]),{13:[1,30]},{12:$V3,14:31,17:$V4,23:$V5,25:$V6,26:$V7,27:$V8},{12:$V3,14:32,17:$V4,23:$V5,25:$V6,26:$V7,27:$V8},{12:$V3,14:33,17:$V4,23:$V5,25:$V6,26:$V7,27:$V8},{12:$V3,14:34,17:$V4,23:$V5,25:$V6,26:$V7,27:$V8},{12:$V3,14:35,17:$V4,23:$V5,25:$V6,26:$V7,27:$V8},o($Vg,[2,13]),{12:$V3,14:36,17:$V4,23:$V5,25:$V6,26:$V7,27:$V8},o($Vg,[2,15]),{16:$V9,17:$Va,18:$Vb,19:$Vc,20:$Vd,21:$Ve,22:$Vf,24:[1,37]},{12:$V3,14:38,17:$V4,23:$V5,25:$V6,26:$V7,27:$V8},o($Vh,[2,8],{18:$Vb,19:$Vc,20:$Vd,21:$Ve,22:$Vf}),o($Vh,[2,9],{18:$Vb,19:$Vc,20:$Vd,21:$Ve,22:$Vf}),o($Vi,[2,10],{20:$Vd,21:$Ve}),o($Vi,[2,11],{20:$Vd,21:$Ve}),o([8,16,17,18,19,20,22,24],[2,12],{21:$Ve}),o($Vi,[2,14],{20:$Vd,21:$Ve}),o($Vg,[2,16]),{8:[2,6],16:$V9,17:$Va,18:$Vb,19:$Vc,20:$Vd,21:$Ve,22:$Vf}];
+      this.table = [{3:1,4:2,6:3,7:4,9:5,10:6,11:$V0,16:$V1,17:$V2},{1:[3]},{5:[1,10],6:11,7:4,9:5,10:6,11:$V0,16:$V1,17:$V2},o($V3,[2,3]),{8:[1,12]},{8:[1,13]},o($V3,[2,6]),{12:[1,14]},{13:$V4,15:15,18:$V5,23:$V6,29:$V7,30:$V8,31:$V9,32:$Va},{18:[1,23]},{1:[2,1]},o($V3,[2,2]),o($V3,[2,4]),o($V3,[2,5]),{13:[1,24]},{8:[2,8],22:$Vb,23:$Vc,24:$Vd,25:$Ve,26:$Vf,27:$Vg,28:$Vh,33:$Vi},{13:$V4,15:33,18:$V5,23:$V6,29:$V7,30:$V8,31:$V9,32:$Va},{13:$V4,15:34,18:$V5,23:$V6,29:$V7,30:$V8,31:$V9,32:$Va},o($Vj,[2,19]),o($Vj,[2,20]),o($Vj,[2,21]),o($Vj,[2,22]),o($Vj,[2,23]),{13:$V4,15:35,18:$V5,23:$V6,29:$V7,30:$V8,31:$V9,32:$Va},{14:[1,36]},{13:$V4,15:37,18:$V5,23:$V6,29:$V7,30:$V8,31:$V9,32:$Va},{13:$V4,15:38,18:$V5,23:$V6,29:$V7,30:$V8,31:$V9,32:$Va},{13:$V4,15:39,18:$V5,23:$V6,29:$V7,30:$V8,31:$V9,32:$Va},{13:$V4,15:40,18:$V5,23:$V6,29:$V7,30:$V8,31:$V9,32:$Va},{13:$V4,15:41,18:$V5,23:$V6,29:$V7,30:$V8,31:$V9,32:$Va},o($Vj,[2,15]),{13:$V4,15:42,18:$V5,23:$V6,29:$V7,30:$V8,31:$V9,32:$Va},{13:$V4,15:43,18:$V5,23:$V6,29:$V7,30:$V8,31:$V9,32:$Va},o($Vj,[2,17]),{19:[1,44],22:$Vb,23:$Vc,24:$Vd,25:$Ve,26:$Vf,27:$Vg,28:$Vh,33:$Vi},{19:[1,45],22:$Vb,23:$Vc,24:$Vd,25:$Ve,26:$Vf,27:$Vg,28:$Vh,33:$Vi},{13:$V4,15:46,18:$V5,23:$V6,29:$V7,30:$V8,31:$V9,32:$Va},o($Vk,[2,10],{24:$Vd,25:$Ve,26:$Vf,27:$Vg,28:$Vh}),o($Vk,[2,11],{24:$Vd,25:$Ve,26:$Vf,27:$Vg,28:$Vh}),o($Vl,[2,12],{26:$Vf,27:$Vg}),o($Vl,[2,13],{26:$Vf,27:$Vg}),o($Vl,[2,14],{27:$Vg}),o($Vl,[2,16],{26:$Vf,27:$Vg}),o([8,19,33],[2,24],{22:$Vb,23:$Vc,24:$Vd,25:$Ve,26:$Vf,27:$Vg,28:$Vh}),o($Vj,[2,18]),{20:[1,47]},{8:[2,7],22:$Vb,23:$Vc,24:$Vd,25:$Ve,26:$Vf,27:$Vg,28:$Vh,33:$Vi},{4:48,6:3,7:4,9:5,10:6,11:$V0,16:$V1,17:$V2},{6:11,7:4,9:5,10:6,11:$V0,16:$V1,17:$V2,21:[1,49]},o($V3,[2,9])];
     }
 
     performAction (yytext:string, yyleng:number, yylineno:number, yy:any, yystate:number /* action[1] */, $$:any /* vstack */, _$:any /* lstack */): any {
@@ -53,51 +57,63 @@ case 4: case 5:
  this.$ = $$[$0-1]; 
 break;
 case 6:
- this.$ = new Declaration(fnParseDatatype($$[$0-3]), $$[$0-2], $$[$0], _$[$0-4]); 
+ this.$ = $$[$0]; 
 break;
 case 7:
- this.$ = new Print($$[$0], _$[$0-1]); 
+ this.$ = new Declaration(fnParseDatatype($$[$0-3]), $$[$0-2], $$[$0], _$[$0-4]); 
 break;
 case 8:
-this.$ = new Suma($$[$0-2], $$[$0], _$[$0-2]);
+ this.$ = new Print($$[$0], _$[$0-1]); 
 break;
 case 9:
-this.$ = new Resta($$[$0-2], $$[$0], _$[$0-2]);
+ this.$ = new Condicional($$[$0-4], $$[$0-1], _$[$0-6]); 
 break;
 case 10:
-this.$ = new Producto($$[$0-2], $$[$0], _$[$0-2]);
+this.$ = new Suma($$[$0-2], $$[$0], _$[$0-2]);
 break;
 case 11:
-this.$ = new Division($$[$0-2], $$[$0], _$[$0-2]);
+this.$ = new Resta($$[$0-2], $$[$0], _$[$0-2]);
 break;
 case 12:
-this.$ = new Potencia($$[$0-2], $$[$0], _$[$0-2]);
+this.$ = new Producto($$[$0-2], $$[$0], _$[$0-2]);
 break;
 case 13:
+this.$ = new Division($$[$0-2], $$[$0], _$[$0-2]);
+break;
+case 14:
+this.$ = new Potencia($$[$0-2], $$[$0], _$[$0-2]);
+break;
+case 15:
 
           this.$ = new Factorial($$[$0-1], _$[$0-1]);
         
 break;
-case 14:
+case 16:
 this.$ = new Modulo($$[$0-2], $$[$0], _$[$0-2]);
 break;
-case 15:
+case 17:
 this.$ = new Negativo($$[$0], _$[$0-1]);
 break;
-case 16:
+case 18:
 this.$ = $$[$0-1];
 break;
-case 17:
+case 19:
 this.$ = new TerminalNum(Number(yytext), _$[$0]);
 break;
-case 18:
+case 20:
+this.$ = new TerminalBool(fnParseBoolean(yytext), _$[$0]);
+break;
+case 21:
 this.$ = new TerminalNum(Math.E, _$[$0]);
 break;
-case 19:
+case 22:
 this.$ = new TerminalNum(Math.PI, _$[$0]);
 break;
-case 20:
+case 23:
 this.$ = new VariableRef($$[$0], _$[$0]);
+break;
+case 24:
+this.$ = new MayorQue($$[$0-2], $$[$0], _$[$0-2]);
 break;
         }
     }
@@ -116,6 +132,7 @@ export class grammarLexer extends JisonLexer implements JisonLexerApi {
     rules: RegExp[] = [
         /^(?:\s+)/,
         /^(?:[0-9]+(?:\.[0-9]+)?\b)/,
+        /^(?:true|false)/,
         /^(?:;)/,
         /^(?:=)/,
         /^(?:\*)/,
@@ -127,64 +144,78 @@ export class grammarLexer extends JisonLexer implements JisonLexerApi {
         /^(?:%)/,
         /^(?:\()/,
         /^(?:\))/,
+        /^(?:\{)/,
+        /^(?:\})/,
+        /^(?:>)/,
         /^(?:PI\b)/,
         /^(?:E\b)/,
         /^(?:ingresar\b)/,
         /^(?:imprimir\b)/,
+        /^(?:si\b)/,
         /^(?:int\b)/,
         /^(?:boolean\b)/,
         /^(?:[0-9a-zA-Z_]+)/,
         /^(?:$)/,
         /^(?:.)/
     ];
-    conditions: any = {"INITIAL":{"rules":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21],"inclusive":true}}
+    conditions: any = {"INITIAL":{"rules":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26],"inclusive":true}}
     performAction (yy:any,yy_:any,$avoiding_name_collisions:any,YY_START:any): any {
           var YYSTATE=YY_START;
         switch($avoiding_name_collisions) {
     case 0:/* skip whitespace */
       break;
-    case 1:return 25
+    case 1:return 29
       break;
-    case 2:return 8
+    case 2:return 30
       break;
-    case 3:return 13
+    case 3:return 8
       break;
-    case 4:return 18
+    case 4:return 14
       break;
-    case 5:return 19
+    case 5:return 24
       break;
-    case 6:return 17
+    case 6:return 25
       break;
-    case 7:return 16
+    case 7:return 23
       break;
-    case 8:return 20
+    case 8:return 22
       break;
-    case 9:return 21
+    case 9:return 26
       break;
-    case 10:return 22
+    case 10:return 27
       break;
-    case 11:return 23
+    case 11:return 28
       break;
-    case 12:return 24
+    case 12:return 18
       break;
-    case 13:return 27
+    case 13:return 19
       break;
-    case 14:return 26
+    case 14:return 20	
       break;
-    case 15:return 10
+    case 15:return 21
       break;
-    case 16:return 15
+    case 16:return 33
       break;
-    case 17:return 11
+    case 17:return 32
       break;
-    case 18:return 11
+    case 18:return 31
       break;
-    case 19:return 12;
+    case 19:return 11
       break;
-    case 20:return 5
+    case 20:return 16
       break;
-    case 21:
-                          throw new Error('Unexpected character ' + yy_.yytext);
+    case 21:return 17
+      break;
+    case 22:return 12
+      break;
+    case 23:return 12
+      break;
+    case 24:return 13;
+      break;
+    case 25:return 5
+      break;
+    case 26:
+                           console.error('Lexico: Unexpected character ' + yy_.yytext);
                         
       break;
         }

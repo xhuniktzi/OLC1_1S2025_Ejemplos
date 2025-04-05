@@ -1,12 +1,17 @@
+import { EnumTypes } from "../context/EnumTypes";
 import { Symbols } from "../context/Symbols";
+import { VariableWrapper } from "../context/VariableWrapper";
 import { IExpr } from "../contracts/IExpr";
 import { TokenLocation } from "@ts-jison/common";
 
 export class Factorial implements IExpr {
     constructor(private expr: IExpr, public location: TokenLocation) { }
 
-    evaluate(context: Symbols): number {
-        return this.factorial(this.expr.evaluate(context));
+    evaluate(context: Symbols): VariableWrapper {
+        return {
+            value: this.factorial(this.expr.evaluate(context).value),
+            type: EnumTypes.INT,
+        }
     }
 
     private factorial(n: number): number {

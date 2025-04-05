@@ -8,6 +8,7 @@
 
 \s+                   /* skip whitespace */
 [0-9]+("."[0-9]+)?\b  return 'NUMBER'
+true|false            return 'BOOLEAN'
 ";"                   return ';'
 "="                   return '='
 "*"                   return '*'
@@ -19,16 +20,20 @@
 "%"                   return '%'
 "("                   return '('
 ")"                   return ')'
+"{"                   return '{'	
+"}"                   return '}'
+">"                   return '>'
 "PI"                  return 'PI'
 "E"                   return 'E'
 "ingresar"            return 'INGRESAR'
 "imprimir"            return 'IMPRIMIR'
-"int"                return 'TYPE'
+"si"                  return 'SI'
+"int"                 return 'TYPE'
 "boolean"             return 'TYPE'
 [0-9a-zA-Z_]+         return 'IDENTIFIER';
 <<EOF>>               return 'EOF'
 .                     {
-                          throw new Error('Unexpected character ' + yytext);
+                           console.error('Lexico: Unexpected character ' + yytext);
                         }
 
 
@@ -44,17 +49,21 @@ import { Potencia } from './composite/Potencia';
 import { Producto } from './composite/Producto';
 import { Resta } from './composite/Resta';
 import { Suma } from './composite/Suma';
+import { MayorQue } from './composite/MayorQue';
+import { Condicional } from './composite/Condicional';
 import { TerminalNum } from './composite/TerminalNum';
+import { TerminalBool } from './composite/TerminalBool';
 import { Declaration } from './composite/Declaration';
 import { VariableRef } from './composite/VariableRef';
 import { Print } from './composite/Print';
 import fnParseDatatype from './functions/parseDatatype';
+import fnParseBoolean from './functions/parseBoolean';
 
 %}
-
+%left '>'
 %left '+' '-'
 %left '*' '/' '%'
-%left '^'
+%nonassoc '^'
 %right '!'
 %left UMINUS
 
@@ -76,6 +85,8 @@ instruction : declaration ';'
     { $$ = $1; }
     | print ';'
     { $$ = $1; }
+    | if 
+    { $$ = $1; }
     ;
 
 declaration : INGRESAR TYPE IDENTIFIER '=' e
@@ -84,6 +95,10 @@ declaration : INGRESAR TYPE IDENTIFIER '=' e
 
 print : IMPRIMIR e
     { $$ = new Print($2, @1); }
+    ;
+
+if : SI '(' e ')' '{' instructions '}'
+    { $$ = new Condicional($3, $6, @1); }
     ;
 
 e
@@ -109,10 +124,14 @@ e
         {$$ = $2;}
     | NUMBER
         {$$ = new TerminalNum(Number(yytext), @1);}
+    | BOOLEAN
+        {$$ = new TerminalBool(fnParseBoolean(yytext), @1);}
     | E
         {$$ = new TerminalNum(Math.E, @1);}
     | PI
         {$$ = new TerminalNum(Math.PI, @1);}
     | IDENTIFIER
         {$$ = new VariableRef($1, @1);}
+    | e '>' e
+        {$$ = new MayorQue($1, $3, @1);}
     ;

@@ -1,4 +1,4 @@
 export enum EnumTypes {
-    INT,
-    BOOL,
+    INT = "int",
+    BOOL = "bool",
 };
