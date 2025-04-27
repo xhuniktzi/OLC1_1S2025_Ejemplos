@@ -9,18 +9,15 @@ instanceParser.parseError = (_err: any, hash: any) => {
 
 const input = `
 
-    ingresar boolean var3 = true;
-    imprimir var3;
 
-    si (var3) {
-        ingresar int var2 = 30;
-        ingresar int var4 = 42;
-        si (var4 > var2) {
-            imprimir var2;
-            imprimir var4;
-        }
-    }
+function suma (int a , int b) {
+    imprimir a;
+    imprimir b;
+    return a + b;
+}
 
+ingresar int res = suma(5, 10);
+imprimir res;
 `;
 try {
     const ast: IStmt[] = instanceParser.parse(input);
@@ -31,6 +28,7 @@ try {
     }
 
 } catch (error) {
+    console.error(error.stack);
     console.error(error.message);
 }
 

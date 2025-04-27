@@ -8,9 +8,10 @@ export class Declaration implements IStmt {
     constructor(private type: EnumTypes, private name: string, private value: IExpr, public location: TokenLocation) { }
 
     evaluate(context: Symbols): void {
+        const t = this.value.evaluate(context);
         context.setSymbol(this.name, {
             type: this.type,
-            value: this.value.evaluate(context).value,
+            value: t.value,
         });
     }
 }
