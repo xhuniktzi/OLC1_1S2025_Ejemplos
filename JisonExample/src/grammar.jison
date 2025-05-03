@@ -9,6 +9,7 @@
 \s+                   /* skip whitespace */
 [0-9]+("."[0-9]+)?\b  return 'NUMBER'
 true|false            return 'BOOLEAN'
+"."                  return '.'
 ";"                   return ';'
 ","                   return ','
 "="                   return '='
@@ -34,6 +35,9 @@ true|false            return 'BOOLEAN'
 "break"              return 'BREAK'
 "return"             return 'RETURN'
 "function"          return 'FUNCTION'
+"class"             return 'CLASS'
+"instanciar"          return 'INSTANCIAR'
+"como"             return 'COMO'
 "int"                 return 'TYPE'
 "boolean"             return 'TYPE'
 [0-9a-zA-Z_]+         return 'IDENTIFIER';
@@ -72,6 +76,8 @@ import { Print } from './composite/Print';
 import fnParseDatatype from './functions/parseDatatype';
 import fnParseBoolean from './functions/parseBoolean';
 import { ArgsWrapper } from './context/ArgsWrapper';
+import { DefClass } from './composite/DefClass';
+import { Instanciar } from './composite/Instanciar';
 
 %}
 %left '>'
@@ -113,6 +119,18 @@ instruction : declaration ';'
     { $$ = $1; }
     | RETURN e ';'
     { $$ = new Retorno($2, @1); }
+    | class_def
+    { $$ = $1; }
+    | instance ';'
+    { $$ = $1; }
+    ;
+
+class_def : CLASS IDENTIFIER '{' lst_props '}' 
+{ $$ = new DefClass($2, $4, @1); }
+    ;
+
+instance: INSTANCIAR IDENTIFIER COMO IDENTIFIER
+    { $$ = new Instanciar($4, $2, @1); }
     ;
 
 declaration : INGRESAR TYPE IDENTIFIER '=' e
@@ -133,6 +151,8 @@ while : MIENTRAS '(' e ')' '{' instructions '}'
 
 assign : IDENTIFIER '=' e
     { $$ = new Asignacion($1, $3, @1); }
+    | IDENTIFIER '.' IDENTIFIER '=' e
+    { $$ = new Asignacion($1 + '.' + $3, $5, @1); }
     ;
 
 def_function : FUNCTION IDENTIFIER '(' lst_args ')' '{' instructions '}'
@@ -150,6 +170,16 @@ break : BREAK
 arg: TYPE IDENTIFIER
     { $$ =  new ArgsWrapper($2, fnParseDatatype($1)); }
     ;
+
+lst_props: lst_props prop
+    { $1.push($2); $$ = $1; }
+    | prop
+    { $$ = [$1]; }
+    ;
+
+prop : TYPE IDENTIFIER ';'
+    { $$ = new ArgsWrapper($2, fnParseDatatype($1)); }
+;
 
 lst_args : lst_args ',' arg
     { $1.push($3); $$ = $1; }
@@ -195,6 +225,8 @@ e
         {$$ = new TerminalNum(Math.PI, @1);}
     | IDENTIFIER
         {$$ = new VariableRef($1, @1);}
+    | IDENTIFIER '.' IDENTIFIER
+        {$$ = new VariableRef($1 + '.' + $3, @1);}
     | e '>' e
         {$$ = new MayorQue($1, $3, @1);}
     | IDENTIFIER '(' lst_e ')'

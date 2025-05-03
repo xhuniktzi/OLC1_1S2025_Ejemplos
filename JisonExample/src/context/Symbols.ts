@@ -1,10 +1,14 @@
 import { DefFuncion } from "../composite/DefFuncion";
+import { ArgsWrapper } from "./ArgsWrapper";
+import { ObjWrapper } from "./ObjWrapper";
 import { VariableWrapper } from "./VariableWrapper";
+
 
 export class Symbols {
     private readonly parent: Symbols | undefined;
     private readonly symbols: Map<string, VariableWrapper> = new Map<string, VariableWrapper>();
     private readonly functions: Map<string, DefFuncion> = new Map<string, DefFuncion>();
+    private readonly classes: Map<string, ArgsWrapper[]> = new Map<string, ArgsWrapper[]>();
     public constructor(parent?: Symbols) {
         this.parent = parent;
     }
@@ -52,4 +56,23 @@ export class Symbols {
             throw new Error(`Semantico: Function ${name} not found`);
         }
     }
+
+    public addClass(name: string, value: ArgsWrapper[]): void {
+        if (this.classes.has(name)) {
+            throw new Error(`Semantico: Class ${name} already exists`);
+        }
+        this.classes.set(name, value);
+    }
+
+    public getClass(name: string): ArgsWrapper[] {
+        const cls = this.classes.get(name);
+        if (cls) {
+            return cls;
+        } else if (this.parent) {
+            return this.parent.getClass(name);
+        } else {
+            throw new Error(`Semantico: Class ${name} not found`);
+        }
+    }
+
 }

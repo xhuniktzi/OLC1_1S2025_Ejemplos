@@ -8,7 +8,10 @@ instanceParser.parseError = (_err: any, hash: any) => {
 };
 
 const input = `
-
+class Animal {
+    int age;
+    boolean isAlive;
+}
 
 function suma (int a , int b) {
     imprimir a;
@@ -18,7 +21,13 @@ function suma (int a , int b) {
 
 ingresar int res = suma(5, 10);
 imprimir res;
-`;
+instanciar Animal como a1;
+instanciar Animal como a2;
+a1.age = 5;
+a2.age = 10;
+
+imprimir a1.age + a2.age;
+`
 try {
     const ast: IStmt[] = instanceParser.parse(input);
     const globalCtx = new Symbols();
